@@ -21,6 +21,21 @@ public class LoxScannerTest {
                 };
 
                 testSource(source, Arrays.asList(tokens));
+
+                testSource("({*.,+*})", Arrays.asList(new LoxToken[] {
+
+                                new LoxToken("(", null, 1, TokenType.LEFT_PAREN),
+                                new LoxToken("{", null, 1, TokenType.LEFT_BRACE),
+                                new LoxToken("*", null, 1, TokenType.STAR),
+                                new LoxToken(".", null, 1, TokenType.DOT),
+                                new LoxToken(",", null, 1, TokenType.COMMA),
+                                new LoxToken("+", null, 1, TokenType.PLUS),
+                                new LoxToken("*", null, 1, TokenType.STAR),
+                                new LoxToken("}", null, 1, TokenType.RIGHT_BRACE),
+                                new LoxToken(")", null, 1, TokenType.RIGHT_PAREN),
+                                new LoxToken("", null, 1, TokenType.EOF),
+
+                }));
         }
 
         void testSource(String source, List<LoxToken> expectedTokens) {
