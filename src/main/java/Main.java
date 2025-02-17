@@ -35,6 +35,10 @@ public class Main {
                 if (fileContents.length() > 0) {
                         Lox engine = new Lox();
                         engine.run(fileContents);
+
+                        if (Lox.hadError) {
+                                System.exit(65);
+                        }
                 } else {
                         System.out.println("EOF  null"); // Placeholder, remove this line when implementing the scanner
                 }

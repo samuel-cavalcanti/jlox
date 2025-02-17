@@ -11,16 +11,13 @@ public class LoxScannerTest {
         @Test
         void testSingleChar() {
 
-                String source = "())";
-                LoxToken[] tokens = {
+                testSource("())", Arrays.asList(new LoxToken[] {
+
                                 new LoxToken("(", null, 1, TokenType.LEFT_PAREN),
                                 new LoxToken(")", null, 1, TokenType.RIGHT_PAREN),
                                 new LoxToken(")", null, 1, TokenType.RIGHT_PAREN),
                                 new LoxToken("", null, 1, TokenType.EOF),
-
-                };
-
-                testSource(source, Arrays.asList(tokens));
+                }));
 
                 testSource("({*.,+*})", Arrays.asList(new LoxToken[] {
 

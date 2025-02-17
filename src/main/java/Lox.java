@@ -5,8 +5,12 @@ import java.util.List;
 
 public class Lox {
 
+        static boolean hadError = false;
+
         public void runFile(String path) throws IOException {
                 String fileContents = Files.readString(Path.of(path));
+                hadError = false;
+                run(fileContents);
         }
 
         public void run(String source) {
@@ -23,8 +27,9 @@ public class Lox {
 
         }
 
-        private void report(int line, String where, String message) {
+        public static void error(int line, String where, String message) {
 
-                System.err.printf("[line %i] Error %s: %s", line, where, message);
+                System.err.printf("[line %i] Error%s: %s", line, where, message);
+                hadError = true;
         }
 }
