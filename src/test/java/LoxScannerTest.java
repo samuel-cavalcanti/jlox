@@ -1,6 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
@@ -33,6 +32,23 @@ public class LoxScannerTest {
                                 new LoxToken("", null, 1, TokenType.EOF),
 
                 }));
+        }
+
+        @Test
+        void testSingleCharError() {
+
+                testSource(",.$(#", Arrays.asList(new LoxToken[] {
+
+                                new LoxToken(",", null, 1, TokenType.COMMA),
+                                new LoxToken(".", null, 1, TokenType.DOT),
+                                new LoxToken("(", null, 1, TokenType.LEFT_PAREN),
+                                new LoxToken("", null, 1, TokenType.EOF),
+
+                }));
+                testSource("@", Arrays.asList(new LoxToken[] {
+                                new LoxToken("", null, 1, TokenType.EOF),
+                }));
+
         }
 
         void testSource(String source, List<LoxToken> expectedTokens) {

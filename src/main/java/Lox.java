@@ -29,7 +29,7 @@ public class Lox {
 
         public static void error(int line, String where, String message) {
 
-                System.err.printf("[line %i] Error%s: %s", line, where, message);
+                System.err.printf("[line %s] Error%s: %s\n", line, where, message);
                 hadError = true;
         }
 }

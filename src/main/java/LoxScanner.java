@@ -45,6 +45,7 @@ public class LoxScanner {
                 }
 
                 Lox.error(line, "", "Unexpected character: " + c);
+                start = current;
 
                 return null;
 
@@ -59,10 +60,8 @@ public class LoxScanner {
                         if (token != null) {
                                 tokens.add(token);
                                 start = current;
-                        } else {
-                                Lox.error(line, "", "Unexpected character.");
-
                         }
+
                 }
 
                 tokens.add(new LoxToken("", null, line, TokenType.EOF));
