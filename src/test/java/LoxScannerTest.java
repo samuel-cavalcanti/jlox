@@ -100,6 +100,16 @@ public class LoxScannerTest {
 
         }
 
+        @Test
+        void testNumberLiteral() {
+                testSource("123 123.4", Arrays.asList(new LoxToken[] {
+                                new LoxToken("123", 123, 1, TokenType.NUMBER),
+                                new LoxToken("123.4", 123.4, 1, TokenType.NUMBER),
+                                new LoxToken("", null, 1, TokenType.EOF),
+                }));
+
+        }
+
         void testSource(String source, List<LoxToken> expectedTokens) {
 
                 LoxScanner scanner = new LoxScanner(source);

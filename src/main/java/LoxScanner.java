@@ -140,7 +140,8 @@ public class LoxScanner {
                 while (isDigit(peek()))
                         advance();
 
-                return addToken(TokenType.NUMBER);
+                String number = source.substring(start, current);
+                return addToken(TokenType.NUMBER, Double.parseDouble(number));
 
         }
 
