@@ -51,6 +51,44 @@ public class LoxScannerTest {
 
         }
 
+        @Test
+        void testEmptySource() {
+                testSource("", Arrays.asList(new LoxToken[] {
+                                new LoxToken("", null, 1, TokenType.EOF),
+                }));
+
+        }
+
+        @Test
+        void testOperatorsAndComment() {
+
+                String loxTokens = """
+                                          // this is a comment
+                                          (( )){} // grouping stuff
+                                          !*+-/=<> <= == // operators
+                                """;
+                testSource(loxTokens, Arrays.asList(new LoxToken[] {
+                                new LoxToken("(", null, 2, TokenType.LEFT_PAREN),
+                                new LoxToken("(", null, 2, TokenType.LEFT_PAREN),
+                                new LoxToken(")", null, 2, TokenType.RIGHT_PAREN),
+                                new LoxToken(")", null, 2, TokenType.RIGHT_PAREN),
+                                new LoxToken("{", null, 2, TokenType.LEFT_BRACE),
+                                new LoxToken("}", null, 2, TokenType.RIGHT_BRACE),
+                                new LoxToken("!", null, 3, TokenType.BANG),
+                                new LoxToken("*", null, 3, TokenType.STAR),
+                                new LoxToken("+", null, 3, TokenType.PLUS),
+                                new LoxToken("-", null, 3, TokenType.MINUS),
+                                new LoxToken("/", null, 3, TokenType.SLASH),
+                                new LoxToken("=", null, 3, TokenType.EQUAL),
+                                new LoxToken("<", null, 3, TokenType.LESS),
+                                new LoxToken(">", null, 3, TokenType.GREATER),
+                                new LoxToken("<=", null, 3, TokenType.LESS_EQUAL),
+                                new LoxToken("==", null, 3, TokenType.EQUAL_EQUAL),
+                                new LoxToken("", null, 3, TokenType.EOF),
+                }));
+
+        }
+
         void testSource(String source, List<LoxToken> expectedTokens) {
 
                 LoxScanner scanner = new LoxScanner(source);
