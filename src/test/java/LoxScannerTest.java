@@ -125,12 +125,38 @@ public class LoxScannerTest {
                 }));
         }
 
+        @Test
+        void testReservedWords() {
+
+                testSource("and class else false for fun if nil or print return super this true var while",
+                                Arrays.asList(new LoxToken[] {
+                                                new LoxToken("and", null, 1, TokenType.AND),
+                                                new LoxToken("class", null, 1, TokenType.CLASS),
+                                                new LoxToken("else", null, 1, TokenType.ELSE),
+                                                new LoxToken("false", null, 1, TokenType.FALSE),
+                                                new LoxToken("for", null, 1, TokenType.FOR),
+                                                new LoxToken("fun", null, 1, TokenType.FUN),
+                                                new LoxToken("if", null, 1, TokenType.IF),
+                                                new LoxToken("nil", null, 1, TokenType.NIL),
+                                                new LoxToken("or", null, 1, TokenType.OR),
+                                                new LoxToken("print", null, 1, TokenType.PRINT),
+                                                new LoxToken("return", null, 1, TokenType.RETURN),
+                                                new LoxToken("super", null, 1, TokenType.SUPER),
+                                                new LoxToken("this", null, 1, TokenType.THIS),
+                                                new LoxToken("true", null, 1, TokenType.TRUE),
+                                                new LoxToken("var", null, 1, TokenType.VAR),
+                                                new LoxToken("while", null, 1, TokenType.WHILE),
+                                                new LoxToken("", null, 1, TokenType.EOF),
+                                }));
+
+        }
+
         void testSource(String source, List<LoxToken> expectedTokens) {
 
                 LoxScanner scanner = new LoxScanner(source);
 
                 List<LoxToken> tokens = scanner.scanTokens();
-                System.err.println(tokens);
+                // System.err.println(tokens);
 
                 assertEquals(tokens.size(), expectedTokens.size());
 
