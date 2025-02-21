@@ -102,9 +102,13 @@ public class LoxScannerTest {
 
         @Test
         void testNumberLiteral() {
-                testSource("123 123.4", Arrays.asList(new LoxToken[] {
+                testSource("123 123.4 .123 123.", Arrays.asList(new LoxToken[] {
                                 new LoxToken("123", 123, 1, TokenType.NUMBER),
                                 new LoxToken("123.4", 123.4, 1, TokenType.NUMBER),
+                                new LoxToken(".", null, 1, TokenType.DOT),
+                                new LoxToken("123", 123, 1, TokenType.NUMBER),
+                                new LoxToken("123", 123, 1, TokenType.NUMBER),
+                                new LoxToken(".", null, 1, TokenType.DOT),
                                 new LoxToken("", null, 1, TokenType.EOF),
                 }));
 
@@ -115,6 +119,7 @@ public class LoxScannerTest {
                 LoxScanner scanner = new LoxScanner(source);
 
                 List<LoxToken> tokens = scanner.scanTokens();
+                System.err.println(tokens);
 
                 assertEquals(tokens.size(), expectedTokens.size());
 

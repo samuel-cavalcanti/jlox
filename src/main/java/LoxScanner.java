@@ -37,6 +37,24 @@ public class LoxScanner {
 
         }
 
+        public List<LoxToken> scanTokens() {
+
+                ArrayList<LoxToken> tokens = new ArrayList<LoxToken>();
+
+                while (isAtEnd() == false) {
+                        LoxToken token = singleChar();
+                        if (token != null) {
+                                tokens.add(token);
+                        }
+
+                }
+
+                tokens.add(new LoxToken("", null, line, TokenType.EOF));
+
+                return tokens;
+
+        }
+
         private LoxToken singleChar() {
 
                 char c = digest();
@@ -96,7 +114,7 @@ public class LoxScanner {
                         return identifier();
 
                 Lox.error(line, "", "Unexpected character: " + c);
-                start = current;
+                // start = current;
 
                 return null;
 
@@ -193,23 +211,6 @@ public class LoxScanner {
 
         }
 
-        public List<LoxToken> scanTokens() {
-
-                ArrayList<LoxToken> tokens = new ArrayList<LoxToken>();
-
-                while (isAtEnd() == false) {
-                        LoxToken token = singleChar();
-                        if (token != null) {
-                                tokens.add(token);
-                        }
-
-                }
-
-                tokens.add(new LoxToken("", null, line, TokenType.EOF));
-
-                return tokens;
-
-        }
 
         private char digest() {
                 start = current;
