@@ -114,6 +114,17 @@ public class LoxScannerTest {
 
         }
 
+        @Test
+        void testIdentifiers() {
+
+                testSource("foo bar _hello", Arrays.asList(new LoxToken[] {
+                                new LoxToken("foo", null, 1, TokenType.IDENTIFIER),
+                                new LoxToken("bar", null, 1, TokenType.IDENTIFIER),
+                                new LoxToken("_hello", null, 1, TokenType.IDENTIFIER),
+                                new LoxToken("", null, 1, TokenType.EOF),
+                }));
+        }
+
         void testSource(String source, List<LoxToken> expectedTokens) {
 
                 LoxScanner scanner = new LoxScanner(source);
