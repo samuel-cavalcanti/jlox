@@ -147,7 +147,7 @@ public class LoxScanner {
         private LoxToken readAComment() {
 
                 char c = peek();
-                while (c != '\n' && c != '\0') {
+                while (isNewLine(c) && c != '\0') {
                         c = peek();
                         advance();
                 }
@@ -159,8 +159,7 @@ public class LoxScanner {
 
                 char c = peek();
                 while (c != '"' && !isAtEnd()) {
-                        if (c == '\n')
-                                line++;
+                        isNewLine(c);
                         advance();
                         c = peek();
                 }
@@ -220,6 +219,14 @@ public class LoxScanner {
                 if (isAtEnd())
                         return '\0';
                 return source.charAt(current);
+        }
+
+        private boolean isNewLine(char c) {
+                boolean b = c == '\n';
+                if (b)
+                        line++;
+
+                return b;
         }
 
         private char peekNext() {

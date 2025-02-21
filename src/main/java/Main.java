@@ -36,7 +36,6 @@ public class Main {
 
                 String fileContents = readFile(filename);
 
-                // Uncomment this block to pass the first stage
                 Lox engine = new Lox();
                 engine.run(fileContents);
 
