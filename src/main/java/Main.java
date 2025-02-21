@@ -21,6 +21,16 @@ public class Main {
                 // when running tests.
                 System.err.println("Logs from your program will appear here!");
 
+                if (args.length == 1) {
+                        try {
+                                GenerateAst.run(args[0]);
+                        } catch (IOException e) {
+                                System.err.println("Unable do generate AST");
+                                System.err.println(e);
+                                System.exit(1);
+                        }
+                }
+
                 if (args.length < 2) {
                         System.err.println("Usage: ./your_program.sh tokenize <filename>");
                         System.exit(1);
