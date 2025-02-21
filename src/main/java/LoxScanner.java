@@ -169,7 +169,7 @@ public class LoxScanner {
                         return null;
                 }
 
-                String lexeme = source.substring(start + 1, current - 1);
+                String lexeme = source.substring(start + 1, current);
 
                 return new LoxToken(lexeme, null, line, TokenType.STRING);
 
