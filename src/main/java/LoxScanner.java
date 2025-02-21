@@ -169,9 +169,11 @@ public class LoxScanner {
                         return null;
                 }
 
-                String lexeme = source.substring(start + 1, current);
+                advance();
 
-                return new LoxToken(lexeme, null, line, TokenType.STRING);
+                String lexeme = source.substring(start + 1, current - 1);
+
+                return addToken(TokenType.STRING, lexeme);
 
         }
 
@@ -247,9 +249,14 @@ public class LoxScanner {
         }
 
         private LoxToken addToken(TokenType type) {
+                return addToken(type, null);
+
+        }
+
+        private LoxToken addToken(TokenType type, Object literal) {
                 String lexeme = source.substring(start, current);
 
-                return new LoxToken(lexeme, null, line, type);
+                return new LoxToken(lexeme, literal, line, type);
 
         }
 
