@@ -7,30 +7,44 @@ public class Lox {
 
         static boolean hadError = false;
 
-        public void runFile(String path) throws IOException {
-                String fileContents = Files.readString(Path.of(path));
+        public Expr parse(String source) {
                 hadError = false;
-                run(fileContents);
-        }
-
-        public void run(String source) {
 
                 LoxScanner scanner = new LoxScanner(source);
 
                 List<LoxToken> tokens = scanner.scanTokens();
 
+                LoxParser parser = new LoxParser(tokens);
+                Expr expression = parser.parse();
 
-                for (LoxToken token : tokens) {
+                if (hadError)
+                        return null;
 
-                        System.out.println(token);
 
-                }
+                return expression;
+        }
 
+        public List<LoxToken> tokens(String source) {
+                hadError = false;
+
+                LoxScanner scanner = new LoxScanner(source);
+
+                return scanner.scanTokens();
         }
 
         public static void error(int line, String where, String message) {
 
                 System.err.printf("[line %s] Error%s: %s\n", line, where, message);
                 hadError = true;
+        }
+
+        public static void error(LoxToken t, String msg) {
+                if (t.type == TokenType.EOF) {
+                        error(t.line, " at end", msg);
+                } else {
+                        error(t.line, " at '" + t.lexeme + "'", msg);
+                }
+                hadError = true;
+
         }
 }

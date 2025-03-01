@@ -25,22 +25,19 @@ public class GenerateAst {
                 writer.println("import java.util.List;");
                 writer.println();
                 writer.println("abstract class " + baseName + " {");
+                writer.println("  abstract <R> R accept(Visitor<R> v);");
+                defineVisitor(writer, baseName, types);
 
                 for (String type : types) {
                         String[] split = type.split(":");
                         String className = split[0].trim();
-                        String fields = split[1];
+                        String fieldsString = split[1];
+                        String[] fields = fieldsString.split(",");
 
                         writer.println("\tstatic class " + className + " extends " + baseName + " {");
-                        writer.println("\t\t" + className + "(" + fields + "){");
-                        for (String field : fields.split(",")) {
-                                String fieldName = field.split(" ")[2].trim();
-                                writer.println("\t\t\tthis." + fieldName + "=" + fieldName + ";");
-                        }
-                        writer.println("\t\t}");
-                        for (String field : fields.split(",")) {
-                                writer.println("\t\tfinal " + field.trim() + ";");
-                        }
+                        defineConstructor(writer, className, baseName, fieldsString, fields);
+                        defineAccept(writer, className);
+                        defineFields(writer, fields);
 
                         writer.println("\t}");
                 }
@@ -49,4 +46,82 @@ public class GenerateAst {
                 writer.close();
         }
 
+        private static void defineVisitor(PrintWriter writer, String baseName, List<String> types) {
+                writer.println("\tinterface Visitor<R> {");
+                for (String type : types) {
+                        String typeName = type.split(":")[0].trim();
+                        writer.println(String.format("\t\tR visit%s(%s %s);", typeName, typeName,
+                                        typeName.toLowerCase()));
+
+                }
+                writer.println("\t}");
+
+        }
+
+        private static void defineConstructor(PrintWriter writer, String className, String baseName,
+                        String fieldsString, String[] fields) {
+
+                writer.println("\t\t" + className + "(" + fieldsString + "){");
+                for (String field : fields) {
+                        String fieldName = field.split(" ")[2].trim();
+                        writer.println("\t\t\tthis." + fieldName + "=" + fieldName + ";");
+                }
+                writer.println("\t\t}");
+        }
+
+        private static void defineFields(PrintWriter writer, String[] fields) {
+                for (String field : fields) {
+                        writer.println("\t\tfinal " + field.trim() + ";");
+                }
+
+        }
+
+        private static void defineAccept(PrintWriter writer, String classNae) {
+
+                writer.println("\t\t@Override");
+                writer.println("\t\t<R> R accept(Visitor<R> v) {");
+                writer.println("\t\t\treturn v.visit" + classNae.trim() + "(this);");
+                writer.println("\t\t}");
+
+        }
+
+}
+
+abstract class pastry {
+
+        abstract void accept(PastryVisitor v);
+}
+
+class Beignet extends pastry {
+
+        @Override
+        void accept(PastryVisitor v) {
+                v.visitBeignet(this);
+        }
+
+}
+
+class Cruller extends pastry {
+
+        @Override
+        void accept(PastryVisitor v) {
+                v.visitCruller(this);
+        }
+}
+
+class Link extends pastry {
+
+        @Override
+        void accept(PastryVisitor v) {
+                v.visitLink(this);
+        }
+
+}
+
+interface PastryVisitor {
+        void visitBeignet(Beignet b);
+
+        void visitLink(Link l);
+
+        void visitCruller(Cruller c);
 }

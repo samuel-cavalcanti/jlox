@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
 
@@ -32,22 +33,29 @@ public class Main {
                 }
 
                 if (args.length < 2) {
-                        System.err.println("Usage: ./your_program.sh tokenize <filename>");
+                        System.err.println("Usage: ./your_program.sh tokenize|parse <filename>");
                         System.exit(1);
                 }
 
                 String command = args[0];
                 String filename = args[1];
+                Lox engine = new Lox();
+                String fileContents = readFile(filename);
+                System.err.println("CONTENTS: " + fileContents);
 
-                if (!command.equals("tokenize")) {
+                if (command.equals("tokenize")) {
+                        List<LoxToken> tokens = engine.tokens(fileContents);
+                        for (LoxToken t : tokens)
+                                System.out.println(t);
+                } else if (command.equals("parse")) {
+                        Expr e = engine.parse(fileContents);
+                        System.out.println(new AstPrinter().print(e));
+
+                } else {
+
                         System.err.println("Unknown command: " + command);
                         System.exit(1);
                 }
-
-                String fileContents = readFile(filename);
-
-                Lox engine = new Lox();
-                engine.run(fileContents);
 
                 if (Lox.hadError) {
                         System.exit(65);
