@@ -13,11 +13,31 @@ public class LoxParserTest {
                 assertExpressions("2 - 3", "(- 2.0 3.0)");
                 assertExpressions("2  *  3", "(* 2.0 3.0)");
                 assertExpressions("2/  3", "(/ 2.0 3.0)");
+                assertExpressions("16 * 38 / 58", "(/ (* 16.0 38.0) 58.0)");
+                assertExpressions("52 + 80 - 94", "(- (+ 52.0 80.0) 94.0)");
         }
 
         @Test
-        void testWhile() {
-                assertExpressions("2/  3", "(/ 2.0 3.0)");
+        void testComparasion() {
+                assertExpressions("83 < 99 < 115", "(< (< 83.0 99.0) 115.0)");
+                assertExpressions("\"baz\" == \"baz\"", "(== baz baz)");
+
+        }
+
+        @Test
+        void numbers() {
+
+                assertExpressions("1", "1.0");
+                assertExpressions("1.2", "1.2");
+                assertExpressions("45", "45.0");
+        }
+
+        @Test
+        void strings() {
+                assertExpressions("\"1\"", "1");
+                assertExpressions("\"hello\"", "hello");
+                assertExpressions("\"world\"", "world");
+                assertExpressions("\"'hello world'\"", "'hello world'");
 
         }
 

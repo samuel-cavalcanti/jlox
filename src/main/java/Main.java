@@ -49,7 +49,8 @@ public class Main {
                                 System.out.println(t);
                 } else if (command.equals("parse")) {
                         Expr e = engine.parse(fileContents);
-                        System.out.println(new AstPrinter().print(e));
+                        if (e != null)
+                                System.out.println(new AstPrinter().print(e));
 
                 } else {
 
