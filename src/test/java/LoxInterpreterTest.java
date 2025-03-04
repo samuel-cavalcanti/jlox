@@ -28,6 +28,14 @@ public class LoxInterpreterTest {
                 // testInterpret("true == false", "false");
                 // testInterpret("false == true", "false");
                 // testInterpret("false == false", "true");
+        }
+
+        @Test
+        void testStringOperators() {
+
+                testInterpret("\"bar\" == \"bar\"", "true");
+                testInterpret("\"foo\"== \"bar\"", "false");
+                testInterpret("\"foo\" + \"bar\"", "foobar");
 
         }
 

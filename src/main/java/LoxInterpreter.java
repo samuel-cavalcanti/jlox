@@ -58,10 +58,8 @@ public class LoxInterpreter implements Expr.Visitor<Object> {
                                 checkNumberOperant(binary.operator, left, right);
                                 return (double) left <= (double) right;
                         case TokenType.EQUAL_EQUAL:
-                                checkNumberOperant(binary.operator, left, right);
                                 return isEqual(left, right);
                         case TokenType.BANG_EQUAL:
-                                checkNumberOperant(binary.operator, left, right);
                                 return !isEqual(left, right);
 
                         case TokenType.PLUS:
