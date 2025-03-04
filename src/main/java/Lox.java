@@ -1,18 +1,14 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 public class Lox {
 
         static boolean hadError = false;
+        static boolean hadRuntimeError = false;
+        private static final LoxInterpreter interpreter = new LoxInterpreter();
 
         public Expr parse(String source) {
-                hadError = false;
 
-                LoxScanner scanner = new LoxScanner(source);
-
-                List<LoxToken> tokens = scanner.scanTokens();
+                List<LoxToken> tokens = scan(source);
 
                 LoxParser parser = new LoxParser(tokens);
                 Expr expression = parser.parse();
@@ -20,16 +16,27 @@ public class Lox {
                 if (hadError)
                         return null;
 
-
                 return expression;
         }
 
-        public List<LoxToken> tokens(String source) {
+        public List<LoxToken> scan(String source) {
                 hadError = false;
 
                 LoxScanner scanner = new LoxScanner(source);
 
                 return scanner.scanTokens();
+        }
+
+
+        public String interpret(String source){
+
+                Expr expr = parse(source);
+                if (expr == null)
+                        return "";
+                return interpreter.interpret(expr);
+
+
+
         }
 
         public static void error(int line, String where, String message) {
@@ -45,6 +52,12 @@ public class Lox {
                         error(t.line, " at '" + t.lexeme + "'", msg);
                 }
                 hadError = true;
+
+        }
+
+        public static void runtimeError(RuntimeError e) {
+                System.err.printf("%s\n[line %s]", e.getMessage(), e.token.line);
+                hadRuntimeError = true;
 
         }
 }

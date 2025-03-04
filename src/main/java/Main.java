@@ -44,13 +44,17 @@ public class Main {
                 System.err.println("CONTENTS: " + fileContents);
 
                 if (command.equals("tokenize")) {
-                        List<LoxToken> tokens = engine.tokens(fileContents);
+                        List<LoxToken> tokens = engine.scan(fileContents);
                         for (LoxToken t : tokens)
                                 System.out.println(t);
                 } else if (command.equals("parse")) {
                         Expr e = engine.parse(fileContents);
                         if (e != null)
                                 System.out.println(new AstPrinter().print(e));
+
+                } else if (command.equals("evaluate")) {
+                        String result = engine.interpret(fileContents);
+                        System.out.println(result);
 
                 } else {
 
@@ -60,6 +64,10 @@ public class Main {
 
                 if (Lox.hadError) {
                         System.exit(65);
+                }
+                if (Lox.hadRuntimeError) {
+
+                        System.exit(70);
                 }
 
         }
