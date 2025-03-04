@@ -36,6 +36,7 @@ public class LoxInterpreterTest {
                 testInterpret("\"bar\" == \"bar\"", "true");
                 testInterpret("\"foo\"== \"bar\"", "false");
                 testInterpret("\"foo\" + \"bar\"", "foobar");
+                testInterpret("\"foo\" - \"bar\"", "");
 
         }
 
