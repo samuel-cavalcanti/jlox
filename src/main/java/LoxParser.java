@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoxParser {
@@ -11,6 +12,50 @@ public class LoxParser {
         LoxParser(List<LoxToken> tokens) {
                 this.tokens = tokens;
                 currentIndex = 0;
+        }
+
+        Expr parse() {
+                try {
+                        return expression();
+                } catch (ParseError e) {
+                        return null;
+                }
+
+        }
+
+        List<Stmt> parseStatement() {
+
+                List<Stmt> statements = new ArrayList<>();
+                try {
+                        while (!isAtEnd()) {
+                                statements.add(statement());
+                        }
+                        return statements;
+                } catch (ParseError e) {
+                        return statements;
+                }
+
+        }
+
+        private Stmt statement() {
+
+                if (match(TokenType.PRINT))
+                        return printStatement();
+
+                return expressionStatement();
+
+        }
+
+        private Stmt printStatement() {
+                Expr e = expression();
+                consume(TokenType.SEMICOLON, "Expected ; after expression");
+                return new Stmt.Print(e);
+        }
+
+        private Stmt expressionStatement() {
+                Expr e = expression();
+                consume(TokenType.SEMICOLON, "Expected ; after expression");
+                return new Stmt.Expression(e);
         }
 
         private boolean match(TokenType... types) {
@@ -64,15 +109,6 @@ public class LoxParser {
         private void advance() {
                 if (!isAtEnd())
                         currentIndex++;
-        }
-
-        Expr parse() {
-                try {
-                        return expression();
-                } catch (ParseError e) {
-                        return null;
-                }
-
         }
 
         private Expr expression() {

@@ -56,7 +56,12 @@ public class Main {
                         String result = engine.interpret(fileContents);
                         System.out.println(result);
 
-                } else {
+                } else if (command.equals("run")) {
+                        engine.run(fileContents);
+
+                }
+
+                else {
 
                         System.err.println("Unknown command: " + command);
                         System.exit(1);

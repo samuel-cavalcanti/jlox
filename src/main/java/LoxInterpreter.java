@@ -1,4 +1,6 @@
-public class LoxInterpreter implements Expr.Visitor<Object> {
+import java.util.List;
+
+public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
         String interpret(Expr expression) {
                 try {
@@ -9,6 +11,24 @@ public class LoxInterpreter implements Expr.Visitor<Object> {
                         return "";
                 }
 
+        }
+
+        void run(List<Stmt> statements) {
+
+                try {
+
+                        for (Stmt e : statements) {
+                                execute(e);
+
+                        }
+
+                } catch (RuntimeError e) {
+                        Lox.runtimeError(e);
+                }
+        }
+
+        private void execute(Stmt e) {
+                e.accept(this);
         }
 
         private String stringify(Object value) {
@@ -125,7 +145,6 @@ public class LoxInterpreter implements Expr.Visitor<Object> {
         }
 
         private Object evaluate(Expr e) {
-
                 return e.accept(this);
         }
 
@@ -148,6 +167,20 @@ public class LoxInterpreter implements Expr.Visitor<Object> {
 
                 }
 
+        }
+
+        @Override
+        public Void visitExpression(Stmt.Expression expression) {
+                evaluate(expression.expression);
+                return null;
+        }
+
+        @Override
+        public Void visitPrint(Stmt.Print print) {
+                Object value = evaluate(print.expression);
+                System.out.println(value);
+
+                return null;
         }
 
 }
