@@ -178,7 +178,7 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> 
         @Override
         public Void visitPrint(Stmt.Print print) {
                 Object value = evaluate(print.expression);
-                System.out.println(value);
+                System.out.println(stringify(value));
 
                 return null;
         }

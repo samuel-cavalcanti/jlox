@@ -1,5 +1,3 @@
-import java.util.List;
-
 abstract class Expr {
   abstract <R> R accept(Visitor<R> v);
 	interface Visitor<R> {
