@@ -43,4 +43,9 @@ class AstPrinter implements Expr.Visitor<String> {
                 return variable.name.lexeme;
         }
 
+        @Override
+        public String visitAssign(Expr.Assign assign) {
+                return assign.name.lexeme;
+        }
+
 }
