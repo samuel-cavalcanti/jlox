@@ -19,6 +19,8 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         }
 
         private String execute(Stmt e) {
+                if (e == null)
+                        return "";
                 return e.accept(this);
         }
 
