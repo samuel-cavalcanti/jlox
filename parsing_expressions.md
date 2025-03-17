@@ -25,7 +25,7 @@ term           → factor ( ( "-" | "+" ) factor )* ;
 factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary
                | primary ;
-primary        → NUMBER | STRING | "true" | "false" | "nil"
+primary        → NUMBER | STRING | "true" | "false" | "nil" | IDENTIFIER
                | "(" expression ")" ;
 ```
 
@@ -41,42 +41,32 @@ exprStmt       → expression ";" ;
 printStmt      → "print" expression ";" ;
 ```
 
+## Variable syntax
 
-```java
+```
+program        → declaration* EOF ;
 
-        List<Stmt> parseStatement() {
+declaration    → varDecl
+               | statement ;
 
-                List<Stmt> statements = new ArrayList<>();
-                try {
-                        while (!isAtEnd()) {
-                                statements.add(statement());
-                        }
-                        return statements;
-                } catch (ParseError e) {
-                        return statements;
-                }
+statement      → exprStmt
+               | printStmt ;
 
-        }
+varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+```
 
-        private Stmt statement() {
+## Assignment syntax
 
-                if (match(TokenType.PRINT))
-                        return printStatement();
+```
+expression     → assignment ;
+assignment     → IDENTIFIER "=" assignment
+               | equality ;
+```
 
-                return expressionStatement();
+```
+statement      → exprStmt
+               | printStmt
+               | block ;
 
-        }
-
-        private Stmt printStatement() {
-                Expr e = expression();
-                consume(TokenType.SEMICOLON, "Expected ; after expression");
-                return new Stmt.Print(e);
-        }
-
-        private Stmt expressionStatement() {
-                Expr e = expression();
-                consume(TokenType.SEMICOLON, "Expected ; after expression");
-                return new Stmt.Expression(e);
-        }
-
+block          → "{" declaration* "}" ;
 ```

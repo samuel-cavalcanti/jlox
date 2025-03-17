@@ -28,7 +28,7 @@ public class LoxParser {
                 List<Stmt> statements = new ArrayList<>();
                 try {
                         while (!isAtEnd()) {
-                                statements.add(statement());
+                                statements.add(declaration());
                         }
                         return statements;
                 } catch (ParseError e) {
@@ -37,12 +37,54 @@ public class LoxParser {
 
         }
 
+        private Stmt declaration() {
+                try {
+                        if (match(TokenType.VAR))
+                                return varDeclaration();
+
+                        return statement();
+                } catch (ParseError error) {
+                        synchronize();
+
+                        return null;
+                }
+
+        }
+
+        private Stmt varDeclaration() {
+                LoxToken t = consume(TokenType.IDENTIFIER, "Expect variable name.");
+                Expr init = null;
+
+                if (match(TokenType.EQUAL))
+                        init = expression();
+
+                consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+                return new Stmt.Var(t, init);
+        }
+
         private Stmt statement() {
 
                 if (match(TokenType.PRINT))
                         return printStatement();
 
+                if (match(TokenType.LEFT_BRACE))
+                        return block();
+
                 return expressionStatement();
+
+        }
+
+        private Stmt block() {
+
+                List<Stmt> stms = new ArrayList<>();
+
+                while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+                        stms.add(declaration());
+                }
+
+                consume(TokenType.RIGHT_BRACE, "Expect '}' after block");
+
+                return new Stmt.Block(stms);
 
         }
 
@@ -79,10 +121,11 @@ public class LoxParser {
 
         }
 
-        private void consume(TokenType t, String msg) {
+        private LoxToken consume(TokenType t, String msg) {
                 if (check(t)) {
+                        LoxToken token = peek();
                         advance();
-                        return;
+                        return token;
                 }
                 throw error(peek(), msg);
 
@@ -112,7 +155,25 @@ public class LoxParser {
         }
 
         private Expr expression() {
-                return equality();
+                return assignment();
+
+        }
+
+        private Expr assignment() {
+                Expr expr = equality();
+                if (match(TokenType.EQUAL)) {
+                        LoxToken equal = previus();
+                        Expr value = assignment();
+
+                        if (expr instanceof Expr.Variable) {
+                                LoxToken name = ((Expr.Variable) expr).name;
+                                return new Expr.Assign(name, value);
+                        }
+                        error(equal, "Invalid assignment target");
+
+                }
+
+                return expr;
 
         }
 
@@ -192,8 +253,11 @@ public class LoxParser {
                         return new Expr.Literal(previus().literal);
                 }
 
-                if (match(TokenType.LEFT_PAREN)) {
+                if (match(TokenType.IDENTIFIER)) {
+                        return new Expr.Variable(previus());
+                }
 
+                if (match(TokenType.LEFT_PAREN)) {
                         Expr e = expression();
                         consume(TokenType.RIGHT_PAREN, "Expect ) after expression");
 

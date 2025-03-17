@@ -8,14 +8,18 @@ public class GenerateAst {
         public static void run(String outputDir) throws IOException {
 
                 defineAst(outputDir, "Expr", Arrays.asList(
+                                "Assign   : LoxToken name, Expr value",
                                 "Binary   : Expr left, LoxToken operator, Expr right",
                                 "Grouping : Expr expression",
                                 "Literal  : Object value",
-                                "Unary    : LoxToken operator, Expr right"));
+                                "Unary    : LoxToken operator, Expr right",
+                                "Variable : LoxToken name"));
 
                 defineAst(outputDir, "Stmt", Arrays.asList(
                                 "Expression : Expr expression",
-                                "Print      : Expr expression"));
+                                "Block      : List<Stmt> statements",
+                                "Print      : Expr expression",
+                                "Var        : LoxToken name, Expr initializer"));
         }
 
         private static void defineAst(
@@ -89,43 +93,4 @@ public class GenerateAst {
 
         }
 
-}
-
-abstract class pastry {
-
-        abstract void accept(PastryVisitor v);
-}
-
-class Beignet extends pastry {
-
-        @Override
-        void accept(PastryVisitor v) {
-                v.visitBeignet(this);
-        }
-
-}
-
-class Cruller extends pastry {
-
-        @Override
-        void accept(PastryVisitor v) {
-                v.visitCruller(this);
-        }
-}
-
-class Link extends pastry {
-
-        @Override
-        void accept(PastryVisitor v) {
-                v.visitLink(this);
-        }
-
-}
-
-interface PastryVisitor {
-        void visitBeignet(Beignet b);
-
-        void visitLink(Link l);
-
-        void visitCruller(Cruller c);
 }

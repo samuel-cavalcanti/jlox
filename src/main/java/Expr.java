@@ -1,10 +1,26 @@
+import java.util.List;
+
 abstract class Expr {
   abstract <R> R accept(Visitor<R> v);
 	interface Visitor<R> {
+		R visitAssign(Assign assign);
 		R visitBinary(Binary binary);
 		R visitGrouping(Grouping grouping);
 		R visitLiteral(Literal literal);
 		R visitUnary(Unary unary);
+		R visitVariable(Variable variable);
+	}
+	static class Assign extends Expr {
+		Assign( LoxToken name, Expr value){
+			this.name=name;
+			this.value=value;
+		}
+		@Override
+		<R> R accept(Visitor<R> v) {
+			return v.visitAssign(this);
+		}
+		final LoxToken name;
+		final Expr value;
 	}
 	static class Binary extends Expr {
 		Binary( Expr left, LoxToken operator, Expr right){
@@ -51,5 +67,15 @@ abstract class Expr {
 		}
 		final LoxToken operator;
 		final Expr right;
+	}
+	static class Variable extends Expr {
+		Variable( LoxToken name){
+			this.name=name;
+		}
+		@Override
+		<R> R accept(Visitor<R> v) {
+			return v.visitVariable(this);
+		}
+		final LoxToken name;
 	}
 }

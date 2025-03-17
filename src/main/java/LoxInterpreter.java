@@ -1,6 +1,7 @@
 import java.util.List;
 
-public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
+        private Environment environment = new Environment();
 
         String interpret(Expr expression) {
                 try {
@@ -13,26 +14,32 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> 
 
         }
 
-        void run(List<Stmt> statements) {
+        String run(List<Stmt> statements) {
+                return executeStmts(statements);
+        }
+
+        private String execute(Stmt e) {
+                return e.accept(this);
+        }
+
+        private String executeStmts(List<Stmt> stmts) {
+                String output = "";
 
                 try {
 
-                        for (Stmt e : statements) {
-                                execute(e);
-
+                        for (Stmt e : stmts) {
+                                output += execute(e) + "\n";
                         }
 
                 } catch (RuntimeError e) {
                         Lox.runtimeError(e);
                 }
-        }
 
-        private void execute(Stmt e) {
-                e.accept(this);
+                return output;
+
         }
 
         private String stringify(Object value) {
-
                 if (value == null)
                         return "nil";
                 if (value instanceof Double) {
@@ -71,8 +78,7 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> 
                         case TokenType.GREATER_EQUAL:
                                 checkNumberOperant(binary.operator, left, right);
                                 return (double) left >= (double) right;
-                        case TokenType.LESS:
-                                checkNumberOperant(binary.operator, left, right);
+                        case TokenType.LESS: checkNumberOperant(binary.operator, left, right);
                                 return (double) left < (double) right;
                         case TokenType.LESS_EQUAL:
                                 checkNumberOperant(binary.operator, left, right);
@@ -170,17 +176,57 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> 
         }
 
         @Override
-        public Void visitExpression(Stmt.Expression expression) {
-                evaluate(expression.expression);
-                return null;
+        public String visitExpression(Stmt.Expression expression) {
+                Object value = evaluate(expression.expression);
+                return stringify(value);
         }
 
         @Override
-        public Void visitPrint(Stmt.Print print) {
+        public String visitPrint(Stmt.Print print) {
                 Object value = evaluate(print.expression);
-                System.out.println(stringify(value));
+                String output = stringify(value);
+                System.out.println(output);
 
-                return null;
+                return output;
+        }
+
+        @Override
+        public String visitVar(Stmt.Var var) {
+                Object value = null;
+                if (var.initializer != null)
+                        value = evaluate(var.initializer);
+
+                environment.define(var.name.lexeme, value);
+                return stringify(null);
+        }
+
+        @Override
+        public Object visitVariable(Expr.Variable variable) {
+                return environment.get(variable.name);
+        }
+
+        @Override
+        public Object visitAssign(Expr.Assign assign) {
+
+                Object value = evaluate(assign.value);
+                environment.assign(assign.name, value);
+                return value;
+        }
+
+        @Override
+        public String visitBlock(Stmt.Block block) {
+
+                Environment env = new Environment(this.environment);
+                Environment previous = this.environment;
+
+                this.environment = env;
+
+                String output = executeStmts(block.statements);
+
+                this.environment = previous;
+
+                return output;
+
         }
 
 }

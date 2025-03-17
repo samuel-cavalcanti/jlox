@@ -36,14 +36,14 @@ public class Lox {
                 return interpreter.interpret(expr);
         }
 
-        public void run(String source){
+        public String run(String source){
 
                 List<LoxToken> tokens = scan(source);
 
                 LoxParser parser = new LoxParser(tokens);
                 List<Stmt> statements = parser.parseStatement();
 
-                interpreter.run(statements);
+                return interpreter.run(statements);
 
         }
 

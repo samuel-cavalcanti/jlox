@@ -37,6 +37,70 @@ public class LoxInterpreterTest {
                 testInterpret("\"foo\"== \"bar\"", "false");
                 testInterpret("\"foo\" + \"bar\"", "foobar");
                 testInterpret("\"foo\" - \"bar\"", "");
+        }
+
+        @Test
+        void testBlock() {
+
+                String expected = "";
+                for (int i = 0; i < 6; i++)
+                        expected += "nil\n";
+
+                expected += "inner a\n";
+                expected += "outer b\n";
+                expected += "global c\n";
+
+                expected += "\n";
+
+                expected += "outer a\n";
+                expected += "outer b\n";
+                expected += "global c\n";
+
+                expected += "\n";
+
+                expected += "global a\n";
+                expected += "global b\n";
+                expected += "global c\n";
+
+                testRun("""
+                                var a = "global a";
+                                var b = "global b";
+                                var c = "global c";
+                                {
+                                  var a = "outer a";
+                                  var b = "outer b";
+                                  {
+                                    var a = "inner a";
+                                    print a;
+                                    print b;
+                                    print c;
+                                  }
+                                  print a;
+                                  print b;
+                                  print c;
+                                }
+                                print a;
+                                print b;
+                                print c; """, expected);
+
+                testRun("""
+                        var a  = 1;
+                        {
+                                var a = a + 2;
+                                print a;
+                        }
+                        """, "nil\nnil\n3\n\n");
+        }
+
+        @Test
+        void testDeclareVariables() {
+
+                testRun("var a = 2;", "nil\n");
+                testRun("print a;", "2\n");
+                testRun("print a;", "2\n");
+                testRun("a = \"foo\";", "foo\n");
+                testRun("print a;", "foo\n");
+                testRun("var a = 2; print a;", "nil\n2\n");
 
         }
 
@@ -44,7 +108,16 @@ public class LoxInterpreterTest {
 
                 Lox l = new Lox();
                 String result = l.interpret(source);
-                assertEquals(result, expected);
+                assertEquals(expected, result);
+
+        }
+
+        void testRun(String source, String expected) {
+
+                Lox l = new Lox();
+                String result = l.run(source);
+
+                assertEquals(expected, result);
 
         }
 }
