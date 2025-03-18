@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
@@ -277,6 +278,18 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                 }
                 return output;
+        }
+
+        @Override
+        public Object visitCall(Expr.Call call) {
+                Object callee = evaluate(call.callee);
+                List<Object> args = new ArrayList<>(call.arguments.size());
+                for (Expr e : call.arguments)
+                        args.add(evaluate(e));
+
+                LoxCallable function = (LoxCallable) callee;
+
+                return function.call(this, args);
         }
 
 }

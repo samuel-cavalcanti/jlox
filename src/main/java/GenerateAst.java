@@ -10,6 +10,7 @@ public class GenerateAst {
                 defineAst(outputDir, "Expr", Arrays.asList(
                                 "Assign   : LoxToken name, Expr value",
                                 "Binary   : Expr left, LoxToken operator, Expr right",
+                                "Call     : Expr callee, LoxToken paren, List<Expr> arguments",
                                 "Grouping : Expr expression",
                                 "Literal  : Object value",
                                 "Logical  : Expr left, LoxToken operator, Expr right",
