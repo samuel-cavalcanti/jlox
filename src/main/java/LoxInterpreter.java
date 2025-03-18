@@ -2,7 +2,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
-        private Environment environment = new Environment();
+        private final Environment globals = new Environment();
+        private Environment environment = globals;
+
+        LoxInterpreter() {
+
+                globals.define("clock", new LoxCallable() {
+
+                        @Override
+                        public Object call(LoxInterpreter interpreter, List<Object> arguments) {
+                                return (double) System.currentTimeMillis() / 1000.0;
+
+                        }
+
+                        @Override
+                        public int arity() {
+                                return 0;
+                        }
+
+                        @Override
+                        public String toString() {
+                                return "<native fn>";
+                        }
+
+                });
+
+        }
 
         String interpret(Expr expression) {
                 try {
@@ -283,13 +308,21 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         @Override
         public Object visitCall(Expr.Call call) {
                 Object callee = evaluate(call.callee);
+                LoxCallable function = (LoxCallable) callee;
+
+                if (!(callee instanceof LoxCallable))
+                        throw new RuntimeError(call.paren, "Can only call function and classes");
+
+                if (function.arity() != call.arguments.size())
+                        throw new RuntimeError(call.paren,
+                                        "Expected " + function.arity() + " arguments but got " + call.arguments.size());
+
                 List<Object> args = new ArrayList<>(call.arguments.size());
                 for (Expr e : call.arguments)
                         args.add(evaluate(e));
 
-                LoxCallable function = (LoxCallable) callee;
-
                 return function.call(this, args);
+
         }
 
 }

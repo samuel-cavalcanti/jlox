@@ -128,3 +128,15 @@ unary          → ( "!" | "-" ) unary | call ;
 call           → primary ( "(" arguments? ")" )* ;
 arguments      → expression ( "," expression )* ;
 ```
+
+## Functions declarations
+
+```
+declaration    → funDecl
+               | varDecl
+               | statement ;
+
+funDecl        → "fun" function ;
+function       → IDENTIFIER "(" parameters? ")" block ;
+parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+```
