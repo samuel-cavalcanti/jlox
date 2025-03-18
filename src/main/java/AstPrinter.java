@@ -48,4 +48,9 @@ class AstPrinter implements Expr.Visitor<String> {
                 return assign.name.lexeme;
         }
 
+        @Override
+        public String visitLogical(Expr.Logical logical) {
+                return logical.operator.lexeme + " " + logical.left.accept(this) + " " + logical.right.accept(this);
+        }
+
 }

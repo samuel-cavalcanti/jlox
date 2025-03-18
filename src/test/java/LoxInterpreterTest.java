@@ -50,13 +50,9 @@ public class LoxInterpreterTest {
                 expected += "outer b\n";
                 expected += "global c\n";
 
-                expected += "\n";
-
                 expected += "outer a\n";
                 expected += "outer b\n";
                 expected += "global c\n";
-
-                expected += "\n";
 
                 expected += "global a\n";
                 expected += "global b\n";
@@ -81,15 +77,16 @@ public class LoxInterpreterTest {
                                 }
                                 print a;
                                 print b;
-                                print c; """, expected);
+                                print c;
+                                """, expected);
 
                 testRun("""
-                        var a  = 1;
-                        {
-                                var a = a + 2;
-                                print a;
-                        }
-                        """, "nil\nnil\n3\n\n");
+                                var a  = 1;
+                                {
+                                        var a = a + 2;
+                                        print a;
+                                }
+                                """, "nil\nnil\n3\n");
         }
 
         @Test
@@ -101,6 +98,73 @@ public class LoxInterpreterTest {
                 testRun("a = \"foo\";", "foo\n");
                 testRun("print a;", "foo\n");
                 testRun("var a = 2; print a;", "nil\n2\n");
+
+        }
+
+        @Test
+        void testLogicOperators() {
+
+                testRun("""
+                                print "hi" or 2;
+                                """, "hi\n");
+
+                testRun("""
+                                print nil or "yes";
+                                """, "yes\n");
+
+                testRun("""
+                                print nil and "yes";
+                                """, "nil\n");
+                testRun("""
+                                print "no" and "yes";
+                                """, "yes\n");
+
+        }
+
+        @Test
+        void condicionalStms() {
+
+                testRun("""
+                                if ( 1 == 1)
+                                        print "yes";
+                                """, "yes\n");
+                testRun("""
+                                if ( 2 < 1)
+                                        print "yes";
+                                else
+                                    print "false";
+                                """, "false\n");
+
+        }
+
+        @Test
+        void testForLoop() {
+                String expected = "nil\n";
+                for (int a = 0; a < 3; a++) {
+                        String printOutput = Integer.toString(a) + "\n";
+                        String assignoutput = Integer.toString(a + 1) + "\n";
+                        expected += printOutput + assignoutput;
+                }
+
+                testRun("for (var i = 0; i < 3; i = i + 1) print i;", expected);
+        }
+
+        @Test
+        void testWhileLoop() {
+
+                String expected = "nil\n";
+                for (int a = 0; a < 3; a++) {
+                        String printOutput = Integer.toString(a) + "\n";
+                        String assignoutput = Integer.toString(a + 1) + "\n";
+                        expected += printOutput + assignoutput;
+                }
+                testRun("""
+                                var a = 0;
+                                while ( a < 3){
+                                        print a; // a
+                                        a = a + 1;// a +1
+                                }
+                                """, expected);
 
         }
 

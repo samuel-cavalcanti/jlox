@@ -21,7 +21,11 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         private String execute(Stmt e) {
                 if (e == null)
                         return "";
-                return e.accept(this);
+                String out = e.accept(this);
+                if (out.endsWith("\n"))
+                        return out;
+                else
+                        return out + "\n";
         }
 
         private String executeStmts(List<Stmt> stmts) {
@@ -30,7 +34,7 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
                 try {
 
                         for (Stmt e : stmts) {
-                                output += execute(e) + "\n";
+                                output += execute(e);
                         }
 
                 } catch (RuntimeError e) {
@@ -80,7 +84,8 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
                         case TokenType.GREATER_EQUAL:
                                 checkNumberOperant(binary.operator, left, right);
                                 return (double) left >= (double) right;
-                        case TokenType.LESS: checkNumberOperant(binary.operator, left, right);
+                        case TokenType.LESS:
+                                checkNumberOperant(binary.operator, left, right);
                                 return (double) left < (double) right;
                         case TokenType.LESS_EQUAL:
                                 checkNumberOperant(binary.operator, left, right);
@@ -229,6 +234,49 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                 return output;
 
+        }
+
+        @Override
+        public String visitIfStmt(Stmt.IfStmt ifstmt) {
+                Object value = evaluate(ifstmt.expression);
+                if (isTruthy(value)) {
+                        return execute(ifstmt.thenBranch);
+                } else {
+                        if (ifstmt.elseBranch != null) {
+                                return execute(ifstmt.elseBranch);
+                        } else {
+                                return "";
+                        }
+
+                }
+
+        }
+
+        @Override
+        public Object visitLogical(Expr.Logical logical) {
+                Object left = evaluate(logical.left);
+
+                boolean isLeftTrue = isTruthy(left);
+
+                if (logical.operator.type == TokenType.OR && isLeftTrue)
+                        return left;
+
+                if (logical.operator.type == TokenType.AND && !isLeftTrue)
+                        return left;
+
+                return evaluate(logical.right);
+
+        }
+
+        @Override
+        public String visitWhileStmt(Stmt.WhileStmt whilestmt) {
+
+                String output = "";
+                while (isTruthy(evaluate(whilestmt.condition))) {
+                        output += execute(whilestmt.body);
+
+                }
+                return output;
         }
 
 }

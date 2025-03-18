@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LoxParser {
@@ -69,8 +70,65 @@ public class LoxParser {
 
                 if (match(TokenType.LEFT_BRACE))
                         return block();
+                if (match(TokenType.IF))
+                        return ifStmt();
+
+                if (match(TokenType.WHILE))
+                        return whileStmt();
+
+                if (match(TokenType.FOR))
+                        return forStmt();
 
                 return expressionStatement();
+
+        }
+
+        private Stmt forInitializer() {
+
+                if (match(TokenType.SEMICOLON)) {
+                        return null;
+                } else if (match(TokenType.VAR))
+                        return varDeclaration();
+                else
+                        return expressionStatement();
+        }
+
+        private Stmt forStmt() {
+
+                consume(TokenType.LEFT_PAREN, "expect '(' after 'for'");
+
+                Stmt initializer = forInitializer();
+
+                Expr condition = check(TokenType.SEMICOLON) ? new Expr.Literal(true) : expression();
+
+                consume(TokenType.SEMICOLON, "expect ';' after 'for' condition");
+
+                Stmt increment = check(TokenType.RIGHT_PAREN) ? null : new Stmt.Expression(expression());
+
+                consume(TokenType.RIGHT_PAREN, "expect ')' before 'for' condition");
+
+                Stmt forbody = statement();
+
+                if (increment != null) // adding increment at the end of loop
+                        forbody = new Stmt.Block(Arrays.asList(forbody, increment));
+
+                Stmt loop = new Stmt.WhileStmt(condition, forbody);
+
+                if (initializer != null) {
+                        return new Stmt.Block(Arrays.asList(initializer, loop));
+                }
+
+                return loop;
+
+        }
+
+        private Stmt whileStmt() {
+                consume(TokenType.LEFT_PAREN, "expect '(' after 'while'");
+                Expr condition = expression();
+                consume(TokenType.RIGHT_PAREN, "expect ')' before 'while' condition");
+                Stmt body = statement();
+
+                return new Stmt.WhileStmt(condition, body);
 
         }
 
@@ -85,6 +143,20 @@ public class LoxParser {
                 consume(TokenType.RIGHT_BRACE, "Expect '}' after block");
 
                 return new Stmt.Block(stms);
+
+        }
+
+        private Stmt ifStmt() {
+                consume(TokenType.LEFT_PAREN, "Expected '(' after if");
+                Expr e = expression();
+                consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
+                Stmt thenStatement = statement();
+                Stmt elseStatement = null;
+                if (match(TokenType.ELSE)) {
+                        elseStatement = statement();
+                }
+
+                return new Stmt.IfStmt(e, thenStatement, elseStatement);
 
         }
 
@@ -160,7 +232,7 @@ public class LoxParser {
         }
 
         private Expr assignment() {
-                Expr expr = equality();
+                Expr expr = logicOr();
                 if (match(TokenType.EQUAL)) {
                         LoxToken equal = previus();
                         Expr value = assignment();
@@ -175,6 +247,30 @@ public class LoxParser {
 
                 return expr;
 
+        }
+
+        private Expr logicOr() {
+                Expr left = logicAnd();
+
+                while (match(TokenType.OR)) {
+                        LoxToken operator = previus();
+                        Expr right = logicOr();
+                        left = new Expr.Logical(left, operator, right);
+                }
+
+                return left;
+        }
+
+        private Expr logicAnd() {
+
+                Expr left = equality();
+
+                while (match(TokenType.AND)) {
+                        LoxToken operator = previus();
+                        Expr right = logicAnd();
+                        left = new Expr.Logical(left, operator, right);
+                }
+                return left;
         }
 
         private Expr equality() {

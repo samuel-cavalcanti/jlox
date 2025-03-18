@@ -12,6 +12,7 @@ public class GenerateAst {
                                 "Binary   : Expr left, LoxToken operator, Expr right",
                                 "Grouping : Expr expression",
                                 "Literal  : Object value",
+                                "Logical  : Expr left, LoxToken operator, Expr right",
                                 "Unary    : LoxToken operator, Expr right",
                                 "Variable : LoxToken name"));
 
@@ -19,6 +20,8 @@ public class GenerateAst {
                                 "Expression : Expr expression",
                                 "Block      : List<Stmt> statements",
                                 "Print      : Expr expression",
+                                "IfStmt     : Expr expression, Stmt thenBranch, Stmt elseBranch",
+                                "WhileStmt  : Expr condition, Stmt body",
                                 "Var        : LoxToken name, Expr initializer"));
         }
 
