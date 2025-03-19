@@ -22,8 +22,12 @@ public class GenerateAst {
                                 "Block      : List<Stmt> statements",
                                 "Print      : Expr expression",
                                 "IfStmt     : Expr expression, Stmt thenBranch, Stmt elseBranch",
+                                "Function   : LoxToken name, List<LoxToken> params, Stmt body",
                                 "WhileStmt  : Expr condition, Stmt body",
-                                "Var        : LoxToken name, Expr initializer"));
+                                "Var        : LoxToken name, Expr initializer",
+                                "ReturnStmt : LoxToken keyword, Expr value"
+
+                ));
         }
 
         private static void defineAst(

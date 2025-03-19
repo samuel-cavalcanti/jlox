@@ -42,6 +42,8 @@ public class LoxParser {
                 try {
                         if (match(TokenType.VAR))
                                 return varDeclaration();
+                        if (match(TokenType.FUN))
+                                return functionDeclaration();
 
                         return statement();
                 } catch (ParseError error) {
@@ -49,6 +51,28 @@ public class LoxParser {
 
                         return null;
                 }
+
+        }
+
+        private Stmt functionDeclaration() {
+                LoxToken funName = consume(TokenType.IDENTIFIER, "Expected function name");
+                consume(TokenType.LEFT_PAREN, "Expected '(' before function name");
+                List<LoxToken> args = new ArrayList<>();
+                while (match(TokenType.IDENTIFIER)) {
+                        if (args.size() >= 255)
+                                error(peek(), "Can't have more than 255 parameters");
+
+                        args.add(previus());
+                        if (check(TokenType.RIGHT_PAREN))
+                                break;
+                        consume(TokenType.COMMA, "Expected ',' after function parameter");
+                        // fn com(a,b,c,}
+                }
+                consume(TokenType.RIGHT_PAREN, "Expected ')' after function parameters");
+                consume(TokenType.LEFT_BRACE, "Expected  '{' before function body");
+                Stmt body = block();
+
+                return new Stmt.Function(funName, args, body);
 
         }
 
@@ -72,15 +96,23 @@ public class LoxParser {
                         return block();
                 if (match(TokenType.IF))
                         return ifStmt();
-
                 if (match(TokenType.WHILE))
                         return whileStmt();
 
                 if (match(TokenType.FOR))
                         return forStmt();
+                if (match(TokenType.RETURN))
+                        return returnStmt();
 
                 return expressionStatement();
 
+        }
+
+        private Stmt returnStmt() {
+                LoxToken keyword = previus();
+                Expr e = check(TokenType.SEMICOLON) ? null : expression();
+                consume(TokenType.SEMICOLON, "Expect ';' after return value");
+                return new Stmt.ReturnStmt(keyword, e);
         }
 
         private Stmt forInitializer() {

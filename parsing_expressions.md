@@ -1,4 +1,3 @@
-
 ## Parsing Expressions
 
 ```
@@ -83,7 +82,6 @@ ifStmt         → "if" "(" expression ")" statement
                ( "else" statement )? ;
 ```
 
-
 ## Logical Operators
 
 ```
@@ -95,7 +93,6 @@ logic_and      → equality ( "and" equality )* ;
 ```
 
 ## While Loops
-
 
 ```
 statement      → exprStmt
@@ -120,7 +117,6 @@ statement      → exprStmt
 forStmt        → "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement ;
 ```
 
-
 ## Functions calls
 
 ```
@@ -139,4 +135,18 @@ declaration    → funDecl
 funDecl        → "fun" function ;
 function       → IDENTIFIER "(" parameters? ")" block ;
 parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+```
+
+## return Statements
+
+```
+statement      → exprStmt
+               | forStmt
+               | ifStmt
+               | printStmt
+               | returnStmt
+               | whileStmt
+               | block ;
+
+returnStmt     → "return" expression? ";" ;
 ```

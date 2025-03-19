@@ -53,4 +53,10 @@ class AstPrinter implements Expr.Visitor<String> {
                 return logical.operator.lexeme + " " + logical.left.accept(this) + " " + logical.right.accept(this);
         }
 
+        @Override
+        public String visitCall(Expr.Call call) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'visitCall'");
+        }
+
 }

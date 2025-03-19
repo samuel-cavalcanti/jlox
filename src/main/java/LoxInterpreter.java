@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
-        private final Environment globals = new Environment();
-        private Environment environment = globals;
+        final Environment globals = new Environment();
+        Environment environment = globals;
 
         LoxInterpreter() {
 
@@ -127,6 +127,8 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                                 if (left instanceof String && right instanceof String)
                                         return (String) left + (String) right;
+                                if (left instanceof String && right instanceof Double)
+                                        return (String) left + String.valueOf(right);
                                 throw new RuntimeError(binary.operator,
                                                 "Operators must be two numbers or two strings");
 
@@ -250,13 +252,17 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         public String visitBlock(Stmt.Block block) {
 
                 Environment env = new Environment(this.environment);
-                Environment previous = this.environment;
 
+                return runWithEnv(block.statements, env);
+
+        }
+
+        String runWithEnv(List<Stmt> statements, Environment env) {
+                Environment previus = this.environment;
                 this.environment = env;
 
-                String output = executeStmts(block.statements);
-
-                this.environment = previous;
+                String output = executeStmts(statements);
+                this.environment = previus;
 
                 return output;
 
@@ -308,14 +314,16 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         @Override
         public Object visitCall(Expr.Call call) {
                 Object callee = evaluate(call.callee);
-                LoxCallable function = (LoxCallable) callee;
 
                 if (!(callee instanceof LoxCallable))
                         throw new RuntimeError(call.paren, "Can only call function and classes");
 
+                LoxCallable function = (LoxCallable) callee;
+
                 if (function.arity() != call.arguments.size())
                         throw new RuntimeError(call.paren,
-                                        "Expected " + function.arity() + " arguments but got " + call.arguments.size());
+                                        function.toString() + " Expected " + function.arity()
+                                                        + " arguments but got " + call.arguments.size());
 
                 List<Object> args = new ArrayList<>(call.arguments.size());
                 for (Expr e : call.arguments)
@@ -323,6 +331,19 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                 return function.call(this, args);
 
+        }
+
+        @Override
+        public String visitFunction(Stmt.Function function) {
+                LoxFunction fun = new LoxFunction(function);
+                environment.define(function.name.lexeme, fun);
+                return fun.toString();
+        }
+
+        @Override
+        public String visitReturnStmt(Stmt.ReturnStmt returnstmt) {
+                Object value = returnstmt.value == null ? null : evaluate(returnstmt.value);
+                throw new Return(value);
         }
 
 }

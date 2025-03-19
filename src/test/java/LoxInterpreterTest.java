@@ -87,6 +87,12 @@ public class LoxInterpreterTest {
                                         print a;
                                 }
                                 """, "nil\nnil\n3\n");
+                testRun("""
+                                var first = "Samuel";
+                                var last = 17;
+                                print "Hi, " + first + " " + last + "!";
+                                """, "nil\nnil\nHi, Samuel 17.0!\n");
+
         }
 
         @Test
@@ -166,6 +172,38 @@ public class LoxInterpreterTest {
                                 }
                                 """, expected);
 
+        }
+
+        @Test
+        void testFunction() {
+
+                testRun("""
+                                fun sayHi(first, last) {
+                                  print "Hi, " + first + " " + last + "!";
+                                }
+
+                                sayHi("Dear", "Reader");""", "<fn sayHi>\nnil\n");
+
+                testRun("""
+                                fun sayHello(first, last) {
+                                  return "Hi, " + first + " " + last + "!";
+                                }
+
+                                print sayHello("Dear", "Reader");""", "<fn sayHello>\nHi, Dear Reader!\n");
+
+                // testRun("""
+                //                 fun fib(n) {
+                //
+                //                   if (n == 0) return 0;
+                //                   if (n == 1) return 1;
+                //
+                //                   return fib(n-2) + fib(n-1);
+                //                 }
+                //
+                //                 print fib(2);
+                //                 """,
+                //                 
+                //                 "<fn fib>\n1\n");
         }
 
         void testInterpret(String source, String expected) {
