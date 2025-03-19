@@ -16,14 +16,12 @@ public class LoxFunction implements LoxCallable {
                         Object argValue = arguments.get(i);
                         env.define(argName.lexeme, argValue);
                 }
-                env.define(declaration.name.lexeme, this);
 
                 List<Stmt> stmts = ((Stmt.Block) declaration.body).statements;
 
                 try {
                         interpreter.runWithEnv(stmts, env);
                 } catch (Return r) {
-                        System.err.println("Returned Value: " + r.value.toString());
                         return r.value;
                 }
 

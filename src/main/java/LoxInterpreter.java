@@ -260,9 +260,13 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         String runWithEnv(List<Stmt> statements, Environment env) {
                 Environment previus = this.environment;
                 this.environment = env;
+                String output = "";
 
-                String output = executeStmts(statements);
-                this.environment = previus;
+                try {
+                        output = executeStmts(statements);
+                } finally {
+                        this.environment = previus;
+                }
 
                 return output;
 

@@ -191,19 +191,16 @@ public class LoxInterpreterTest {
 
                                 print sayHello("Dear", "Reader");""", "<fn sayHello>\nHi, Dear Reader!\n");
 
-                // testRun("""
-                //                 fun fib(n) {
-                //
-                //                   if (n == 0) return 0;
-                //                   if (n == 1) return 1;
-                //
-                //                   return fib(n-2) + fib(n-1);
-                //                 }
-                //
-                //                 print fib(2);
-                //                 """,
-                //                 
-                //                 "<fn fib>\n1\n");
+                testRun("""
+                                fun fib(n) {
+                                        if(n < 2) return n;
+                                        return fib(n-2) + fib(n-1);
+                                }
+
+                                print fib(10);
+                                """,
+                                
+                                "<fn fib>\n55\n");
         }
 
         void testInterpret(String source, String expected) {
