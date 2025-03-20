@@ -339,7 +339,7 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
         @Override
         public String visitFunction(Stmt.Function function) {
-                LoxFunction fun = new LoxFunction(function);
+                LoxFunction fun = new LoxFunction(function, this.environment);
                 environment.define(function.name.lexeme, fun);
                 return fun.toString();
         }

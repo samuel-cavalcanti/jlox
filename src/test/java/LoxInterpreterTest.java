@@ -199,8 +199,30 @@ public class LoxInterpreterTest {
 
                                 print fib(10);
                                 """,
-                                
+
                                 "<fn fib>\n55\n");
+        }
+
+        @Test
+        void testClosures() {
+
+                testRun("""
+                                fun makeCounter() {
+                                  var i = 0;
+                                  fun count() {
+                                    i = i + 1;
+                                    print "make counter " + i;
+                                    return i;
+                                  }
+
+                                  return count;
+                                }
+
+                                var counter = makeCounter();
+                                print counter(); // "1".
+                                print counter(); // "2".
+                                                                """, "<fn makeCounter>\nnil\n1\n2\n");
+
         }
 
         void testInterpret(String source, String expected) {
