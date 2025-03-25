@@ -83,8 +83,8 @@ public class LoxInterpreterTest {
                 testRun("""
                                 var a  = 1;
                                 {
-                                        var a = a + 2;
-                                        print a;
+                                        var b = a + 2;
+                                        print b;
                                 }
                                 """, "nil\nnil\n3\n");
                 testRun("""
@@ -92,6 +92,15 @@ public class LoxInterpreterTest {
                                 var last = 17;
                                 print "Hi, " + first + " " + last + "!";
                                 """, "nil\nnil\nHi, Samuel 17.0!\n");
+
+
+                testRun("""
+                                var a  = 1;
+                                {
+                                        var a = a + 2;
+                                        print a;
+                                }
+                                """, "");
 
         }
 
