@@ -116,10 +116,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
         @Override
         public Void visitVar(Stmt.Var stmt) {
+                declare(stmt.name);
                 if (stmt.initializer != null) {
                         resolve(stmt.initializer);
                 }
-                declare(stmt.name);
                 define(stmt.name);
                 return null;
         }
