@@ -27,8 +27,7 @@ public class Lox {
                 return scanner.scanTokens();
         }
 
-
-        public String interpret(String source){
+        public String interpret(String source) {
 
                 Expr expr = parse(source);
                 if (expr == null)
@@ -36,12 +35,16 @@ public class Lox {
                 return interpreter.interpret(expr);
         }
 
-        public String run(String source){
+        public String run(String source) {
 
                 List<LoxToken> tokens = scan(source);
 
                 LoxParser parser = new LoxParser(tokens);
                 List<Stmt> statements = parser.parseStatement();
+                Resolver resolver = new Resolver(interpreter);
+                resolver.resolve(statements);
+                if (hadError)
+                        return "";
 
                 return interpreter.run(statements);
 

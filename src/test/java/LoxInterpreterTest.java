@@ -204,6 +204,18 @@ public class LoxInterpreterTest {
         }
 
         @Test
+        void testSameName() {
+
+                testRun("""
+                                fun bad() {
+                                  var bad_val = "first";
+                                  var bad_val = "second";
+                                }
+                                bad();""", "");
+
+        }
+
+        @Test
         void testClosures() {
 
                 testRun("""
@@ -222,6 +234,19 @@ public class LoxInterpreterTest {
                                 print counter(); // "1".
                                 print counter(); // "2".
                                                                 """, "<fn makeCounter>\nnil\n1\n2\n");
+
+                testRun("""
+                                var a = "global";
+                                {
+                                  fun showA() {
+                                    print a;
+                                    return a;
+                                  }
+
+                                  showA();
+                                  var a = "block";
+                                  showA();
+                                }""", "nil\n<fn showA>\nglobal\nnil\nglobal\n");
 
         }
 

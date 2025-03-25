@@ -1,8 +1,11 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
         final Environment globals = new Environment();
+        private final Map<Expr, Integer> locals = new HashMap<>();
         Environment environment = globals;
 
         LoxInterpreter() {
@@ -27,6 +30,10 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                 });
 
+        }
+
+        void resolve(Expr expr, int depth) {
+                locals.put(expr, depth);
         }
 
         String interpret(Expr expression) {
@@ -237,7 +244,16 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
         @Override
         public Object visitVariable(Expr.Variable variable) {
-                return environment.get(variable.name);
+                return lookUpVariable(variable.name, variable);
+        }
+
+        private Object lookUpVariable(LoxToken name, Expr expr) {
+                Integer distance = locals.get(expr);
+                if (distance != null) {
+                        return environment.getAt(distance, name.lexeme);
+                } else {
+                        return globals.get(name);
+                }
         }
 
         @Override
@@ -245,6 +261,14 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
 
                 Object value = evaluate(assign.value);
                 environment.assign(assign.name, value);
+                Integer distance = locals.get(assign);
+                if (distance != null) {
+                        environment.assignAt(distance, assign.name, value);
+                } else {
+                        globals.assign(assign.name, value);
+                }
+
+                
                 return value;
         }
 
