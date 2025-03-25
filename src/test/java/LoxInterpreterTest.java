@@ -93,7 +93,6 @@ public class LoxInterpreterTest {
                                 print "Hi, " + first + " " + last + "!";
                                 """, "nil\nnil\nHi, Samuel 17.0!\n");
 
-
                 testRun("""
                                 var a  = 1;
                                 {
@@ -149,6 +148,14 @@ public class LoxInterpreterTest {
                                 else
                                     print "false";
                                 """, "false\n");
+
+        }
+
+        @Test
+        void testReturnAtTopLevel() {
+
+                testRun("""
+                                return "at top level";""", "");
 
         }
 

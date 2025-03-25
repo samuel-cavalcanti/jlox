@@ -6,6 +6,8 @@ import java.util.Map;
 public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String> {
         final Environment globals = new Environment();
         private final Map<Expr, Integer> locals = new HashMap<>();
+
+
         Environment environment = globals;
 
         LoxInterpreter() {
@@ -268,8 +270,8 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
                         globals.assign(assign.name, value);
                 }
 
-                
                 return value;
+
         }
 
         @Override

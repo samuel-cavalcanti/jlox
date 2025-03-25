@@ -8,6 +8,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         private final LoxInterpreter interpreter;
         private final Stack<Map<String, Boolean>> scopes = new Stack<>();
 
+        private enum FunctionType {
+                NONE,
+                FUNCTION
+        }
+
+        private FunctionType currentFunction = FunctionType.NONE;
+
         Resolver(LoxInterpreter i) {
                 interpreter = i;
         }
@@ -99,11 +106,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
         private void resolveFunction(Stmt.Function function) {
                 beginScope();
+                FunctionType temp = currentFunction;
+                currentFunction = FunctionType.FUNCTION;
                 for (LoxToken param : function.params) {
                         declare(param);
                         define(param);
                 }
                 resolve(((Stmt.Block) function.body).statements);
+                currentFunction = temp;
                 endScope();
         }
 
@@ -126,6 +136,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
         @Override
         public Void visitReturnStmt(Stmt.ReturnStmt returnstmt) {
+                if (currentFunction == Resolver.FunctionType.NONE)
+                        Lox.error(returnstmt.keyword, "Can't return from top-level code.");
                 if (returnstmt.value != null)
                         resolve(returnstmt.value);
 
