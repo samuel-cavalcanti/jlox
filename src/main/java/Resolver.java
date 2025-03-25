@@ -20,11 +20,15 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
 
         void resolve(Expr e) {
+                if (e == null)
+                        return;
                 e.accept(this);
 
         }
 
         void resolve(Stmt s) {
+                if (s == null)
+                        return;
 
                 s.accept(this);
         }

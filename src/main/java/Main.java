@@ -58,7 +58,6 @@ public class Main {
 
                 } else if (command.equals("run")) {
                         engine.run(fileContents);
-
                 }
 
                 else {
