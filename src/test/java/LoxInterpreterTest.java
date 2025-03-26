@@ -345,6 +345,26 @@ public class LoxInterpreterTest {
                                 }
                                 Foo();""", "Foo\nFoo instance\n");
 
+                testRun("""
+                                class Counter {
+                                  init(startValue) {
+                                    if (startValue < 0) {
+                                      print "startValue can't be negative";
+                                      this.count = 0;
+                                    } else {
+                                      this.count = startValue;
+                                    }
+                                  }
+                                }
+
+                                // constructor is called automatically here
+                                var instance = Counter(-10);
+                                print instance.count;
+
+                                // it should be possible to call the constructor
+                                // on a class instance as well
+                                print instance.init(10).count;""", "Counter\nnil\n0\n10\n");
+
         }
 
         void testInterpret(String source, String expected) {
