@@ -40,6 +40,8 @@ public class LoxParser {
 
         private Stmt declaration() {
                 try {
+                        if (match(TokenType.CLASS))
+                                return classDeclaration();
                         if (match(TokenType.VAR))
                                 return varDeclaration();
                         if (match(TokenType.FUN))
@@ -54,9 +56,23 @@ public class LoxParser {
 
         }
 
+        private Stmt classDeclaration() {
+                LoxToken className = consume(TokenType.IDENTIFIER, "Expected a class name after 'class'");
+                consume(TokenType.LEFT_BRACE, String.format("Expected '{' after class %s", className.lexeme));
+
+                List<Stmt.Function> methods = new ArrayList<>();
+                while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+                        methods.add((Stmt.Function) functionDeclaration());
+                }
+
+                consume(TokenType.RIGHT_BRACE, String.format("Expected '}' after class %s body", className.lexeme));
+
+                return new Stmt.ClassStmt(className, methods);
+        }
+
         private Stmt functionDeclaration() {
                 LoxToken funName = consume(TokenType.IDENTIFIER, "Expected function name");
-                consume(TokenType.LEFT_PAREN, "Expected '(' before function name");
+                consume(TokenType.LEFT_PAREN, String.format("Expected '(' before function %s", funName.lexeme));
                 List<LoxToken> args = new ArrayList<>();
                 while (match(TokenType.IDENTIFIER)) {
                         if (args.size() >= 255)
@@ -200,7 +216,7 @@ public class LoxParser {
 
         private Stmt expressionStatement() {
                 Expr e = expression();
-                consume(TokenType.SEMICOLON, "Expected ; after expression");
+                consume(TokenType.SEMICOLON, "Expected ; after expression " + e.toString());
                 return new Stmt.Expression(e);
         }
 
@@ -265,6 +281,7 @@ public class LoxParser {
 
         private Expr assignment() {
                 Expr expr = logicOr();
+
                 if (match(TokenType.EQUAL)) {
                         LoxToken equal = previus();
                         Expr value = assignment();
@@ -273,6 +290,11 @@ public class LoxParser {
                                 LoxToken name = ((Expr.Variable) expr).name;
                                 return new Expr.Assign(name, value);
                         }
+                        if (expr instanceof Expr.Get) {
+                                Expr.Get get = (Expr.Get) expr;
+                                return new Expr.Set(get.object, get.name, value);
+                        }
+
                         error(equal, "Invalid assignment target");
 
                 }
@@ -375,6 +397,10 @@ public class LoxParser {
                 while (true) {
                         if (match(TokenType.LEFT_PAREN)) {
                                 expr = finishCall(expr);
+                        } else if (match(TokenType.DOT)) {
+                                LoxToken name = consume(TokenType.IDENTIFIER,
+                                                "Expected method or property name after '.'");
+                                expr = new Expr.Get(expr, name);
                         } else {
                                 break;
                         }
@@ -408,7 +434,8 @@ public class LoxParser {
                         return new Expr.Literal(false);
                 if (match(TokenType.NIL))
                         return new Expr.Literal(null);
-
+                if (match(TokenType.THIS))
+                        return new Expr.ThisExpr(previus());
                 if (match(TokenType.NUMBER, TokenType.STRING)) {
                         return new Expr.Literal(previus().literal);
                 }

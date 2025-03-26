@@ -152,11 +152,17 @@ public class LoxInterpreterTest {
         }
 
         @Test
-        void testReturnAtTopLevel() {
+        void testInvalidReturns() {
 
                 testRun("""
                                 return "at top level";""", "");
 
+                testRun("""
+                                class Foo {
+                                          init() {
+                                            return "error";
+                                          }
+                                        }""", "");
         }
 
         @Test
@@ -232,6 +238,20 @@ public class LoxInterpreterTest {
         }
 
         @Test
+        void testInvalidUsesOfThis() {
+
+                testRun("""
+                                fun bad() {
+                                        print this;
+                                }
+                                bad();""", "");
+
+                testRun("""
+                                print this;""", "");
+
+        }
+
+        @Test
         void testClosures() {
 
                 testRun("""
@@ -263,6 +283,67 @@ public class LoxInterpreterTest {
                                   var a = "block";
                                   showA();
                                 }""", "nil\n<fn showA>\nglobal\nnil\nglobal\n");
+
+        }
+
+        @Test
+        void testClass() {
+
+                testRun("""
+                                class Cake {
+                                  taste() {
+                                    var adjective = "delicious";
+                                    var msg = "The " + this.flavor + " cake is " + adjective + "!";
+                                    print msg ;
+                                    return msg;
+
+                                  }
+                                }
+
+                                var cake = Cake();
+                                cake.flavor = "German chocolate";
+
+                                cake.taste();
+                                """, "Cake\nnil\nGerman chocolate\nThe German chocolate cake is delicious!\n");
+
+                testRun("""
+                                class Person {
+                                  sayName() {
+                                    print this.name;
+                                    return this.name;
+                                  }
+                                }
+
+                                var jane = Person();
+                                jane.name = "Jane";
+
+                                var method = jane.sayName;
+                                method();""", "Person\nnil\nJane\nnil\nJane\n");
+
+                testRun("""
+                                class Person {
+                                  sayName() {
+                                    print this.name;
+                                    return this.name;
+                                  }
+                                }
+
+                                var jane = Person();
+                                jane.name = "Jane";
+
+                                var bill = Person();
+                                bill.name = "Bill";
+
+                                bill.sayName = jane.sayName;
+                                bill.sayName();""", "Person\nnil\nJane\nnil\nBill\n<fn sayName>\nJane\n");
+
+                testRun("""
+                                class Foo {
+                                  init() {
+                                    return;
+                                  }
+                                }
+                                Foo();""", "Foo\nFoo instance\n");
 
         }
 

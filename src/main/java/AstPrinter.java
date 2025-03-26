@@ -59,4 +59,22 @@ class AstPrinter implements Expr.Visitor<String> {
                 throw new UnsupportedOperationException("Unimplemented method 'visitCall'");
         }
 
+        @Override
+        public String visitGet(Expr.Get get) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'visitGet'");
+        }
+
+        @Override
+        public String visitSet(Expr.Set set) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'visitSet'");
+        }
+
+        @Override
+        public String visitThisExpr(Expr.ThisExpr thisexpr) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'visitThisExpr'");
+        }
+
 }

@@ -150,3 +150,34 @@ statement      → exprStmt
 
 returnStmt     → "return" expression? ";" ;
 ```
+
+## Class Declarations
+
+```
+declaration    → classDecl
+               | funDecl
+               | varDecl
+               | statement ;
+
+classDecl      → "class" IDENTIFIER "{" function* "}" ;
+```
+
+## Properties on Instances
+
+```
+call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
+```
+
+## Set Expressions
+
+```
+assignment     → ( call "." )? IDENTIFIER "=" assignment
+               | logic_or ;
+```
+
+## This
+
+```
+primary        → NUMBER | STRING | "true" | "false" | "nil" | "this" | IDENTIFIER
+               | "(" expression ")" ;
+```

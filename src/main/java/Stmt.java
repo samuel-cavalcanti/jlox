@@ -8,6 +8,8 @@ abstract class Stmt {
 
                 R visitBlock(Block block);
 
+                R visitClassStmt(ClassStmt classstmt);
+
                 R visitPrint(Print print);
 
                 R visitIfStmt(IfStmt ifstmt);
@@ -45,6 +47,21 @@ abstract class Stmt {
                 }
 
                 final List<Stmt> statements;
+        }
+
+        static class ClassStmt extends Stmt {
+                ClassStmt(LoxToken name, List<Stmt.Function> methods) {
+                        this.name = name;
+                        this.methods = methods;
+                }
+
+                @Override
+                <R> R accept(Visitor<R> v) {
+                        return v.visitClassStmt(this);
+                }
+
+                final LoxToken name;
+                final List<Stmt.Function> methods;
         }
 
         static class Print extends Stmt {
