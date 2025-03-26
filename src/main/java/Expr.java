@@ -14,6 +14,8 @@ abstract class Expr {
 
                 R visitSet(Set set);
 
+                R visitSuperExpr(SuperExpr superexpr);
+
                 R visitGrouping(Grouping grouping);
 
                 R visitLiteral(Literal literal);
@@ -89,11 +91,6 @@ abstract class Expr {
 
                 final Expr object;
                 final LoxToken name;
-
-                @Override
-                public String toString() {
-                        return object.toString() + "." + name.lexeme;
-                }
         }
 
         static class Set extends Expr {
@@ -111,6 +108,21 @@ abstract class Expr {
                 final Expr object;
                 final LoxToken name;
                 final Expr value;
+        }
+
+        static class SuperExpr extends Expr {
+                SuperExpr(LoxToken keyword, LoxToken method) {
+                        this.keyword = keyword;
+                        this.method = method;
+                }
+
+                @Override
+                <R> R accept(Visitor<R> v) {
+                        return v.visitSuperExpr(this);
+                }
+
+                final LoxToken keyword;
+                final LoxToken method;
         }
 
         static class Grouping extends Expr {
@@ -195,10 +207,5 @@ abstract class Expr {
                 }
 
                 final LoxToken name;
-
-                @Override
-                public String toString() {
-                        return name.lexeme;
-                }
         }
 }

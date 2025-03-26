@@ -13,6 +13,7 @@ public class GenerateAst {
                                 "Call     : Expr callee, LoxToken paren, List<Expr> arguments",
                                 "Get      : Expr object, LoxToken name",
                                 "Set      : Expr object, LoxToken name, Expr value",
+                                "SuperExpr: LoxToken keyword, LoxToken method",
                                 "Grouping : Expr expression",
                                 "Literal  : Object value",
                                 "Logical  : Expr left, LoxToken operator, Expr right",
@@ -23,7 +24,7 @@ public class GenerateAst {
                 defineAst(outputDir, "Stmt", Arrays.asList(
                                 "Expression : Expr expression",
                                 "Block      : List<Stmt> statements",
-                                "ClassStmt      : LoxToken name, List<Stmt.Function> methods",
+                                "ClassStmt  : LoxToken name, Expr.Variable superclass, List<Stmt.Function> methods",
                                 "Print      : Expr expression",
                                 "IfStmt     : Expr expression, Stmt thenBranch, Stmt elseBranch",
                                 "Function   : LoxToken name, List<LoxToken> params, Stmt body",

@@ -252,6 +252,30 @@ public class LoxInterpreterTest {
         }
 
         @Test
+        void testInvalidUsesOfSuper() {
+
+                testRun("""
+                                fun bad() {
+                                        print super.foo();
+                                }
+                                bad();""", "");
+
+                testRun("""
+                                print super.foo();""", "");
+                testRun("""
+                                print super.foo;""", "");
+
+                testRun("""
+                                class P{
+                                         init(){
+                                           super.init();
+                                         }
+                                }
+                                 """, "");
+
+        }
+
+        @Test
         void testClosures() {
 
                 testRun("""
@@ -364,6 +388,26 @@ public class LoxInterpreterTest {
                                 // it should be possible to call the constructor
                                 // on a class instance as well
                                 print instance.init(10).count;""", "Counter\nnil\n0\n10\n");
+
+                testRun("""
+                                class Doughnut {
+                                  cook() {
+                                    var msg = "Fry until golden brown.";
+                                    print msg;
+                                    return msg;
+                                  }
+                                }
+
+                                class BostonCream < Doughnut {
+                                  cook() {
+                                    var msg = "Pipe full of custard and coat with chocolate.";
+                                    print msg;
+                                    return msg;
+                                  }
+                                }
+
+                                BostonCream().cook();""",
+                                "Doughnut\nBostonCream\nPipe full of custard and coat with chocolate.\n");
 
         }
 

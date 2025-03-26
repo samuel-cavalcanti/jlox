@@ -58,6 +58,15 @@ public class LoxParser {
 
         private Stmt classDeclaration() {
                 LoxToken className = consume(TokenType.IDENTIFIER, "Expected a class name after 'class'");
+
+                Expr.Variable superClass = null;
+                if (match(TokenType.LESS)) {
+                        LoxToken name = consume(TokenType.IDENTIFIER,
+                                        String.format("Expected Superclass name after '%s <'", className.lexeme));
+                        superClass = new Expr.Variable(name);
+
+                }
+
                 consume(TokenType.LEFT_BRACE, String.format("Expected '{' after class %s", className.lexeme));
 
                 List<Stmt.Function> methods = new ArrayList<>();
@@ -67,7 +76,7 @@ public class LoxParser {
 
                 consume(TokenType.RIGHT_BRACE, String.format("Expected '}' after class %s body", className.lexeme));
 
-                return new Stmt.ClassStmt(className, methods);
+                return new Stmt.ClassStmt(className, superClass, methods);
         }
 
         private Stmt functionDeclaration() {
@@ -438,6 +447,15 @@ public class LoxParser {
                         return new Expr.ThisExpr(previus());
                 if (match(TokenType.NUMBER, TokenType.STRING)) {
                         return new Expr.Literal(previus().literal);
+                }
+                if (match(TokenType.SUPER)) {
+                        LoxToken superToken = previus();
+                        consume(TokenType.DOT, "Expected '.' after super");
+                        LoxToken name = consume(TokenType.IDENTIFIER,
+                                        "Expected a superclass method name after 'super.'");
+
+                        return new Expr.SuperExpr(superToken, name);
+
                 }
 
                 if (match(TokenType.IDENTIFIER)) {

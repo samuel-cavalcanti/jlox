@@ -379,16 +379,36 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         @Override
         public String visitClassStmt(Stmt.ClassStmt classstmt) {
                 environment.define(classstmt.name.lexeme, null);
+                LoxClass superClass = evaluateSuperClass(classstmt.superclass);
+                if (superClass != null) {
+                        environment = new Environment(environment);
+                        environment.define("super", superClass);
+                }
+
                 Map<String, LoxFunction> methods = new HashMap<>();
                 for (Stmt.Function method : classstmt.methods) {
                         LoxFunction fun = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
                         methods.put(method.name.lexeme, fun);
                 }
 
-                LoxClass klass = new LoxClass(classstmt.name.lexeme, methods);
+                LoxClass klass = new LoxClass(classstmt.name.lexeme, superClass, methods);
+                if (superClass != null) {
+                        environment = environment.enclosing;
+                }
                 environment.assign(classstmt.name, klass);
 
                 return classstmt.name.lexeme;
+        }
+
+        private LoxClass evaluateSuperClass(Expr.Variable superclass) {
+                if (superclass == null)
+                        return null;
+
+                Object superClass = evaluate(superclass);
+                if (!(superClass instanceof LoxClass))
+                        throw new RuntimeError(superclass.name, String.format(
+                                        "super class %s must be a class", superclass.name.lexeme));
+                return (LoxClass) superClass;
         }
 
         @Override
@@ -418,6 +438,21 @@ public class LoxInterpreter implements Expr.Visitor<Object>, Stmt.Visitor<String
         @Override
         public Object visitThisExpr(Expr.ThisExpr thisexpr) {
                 return lookUpVariable(thisexpr.keyword, thisexpr);
+        }
+
+        @Override
+        public Object visitSuperExpr(Expr.SuperExpr superexpr) {
+                int distance = locals.get(superexpr);
+                LoxClass superclass = (LoxClass) environment.getAt(
+                                distance, "super");
+
+                LoxInstance obj = (LoxInstance) environment.getAt(distance - 1, "this");
+                LoxFunction method = superclass.findMethod(superexpr.method.lexeme);
+                if (method == null)
+                        throw new RuntimeError(superexpr.method, String.format("Undefined method: %s in the class %s",
+                                        superexpr.method.lexeme, superclass.name));
+
+                return method.bind(obj);
         }
 
 }

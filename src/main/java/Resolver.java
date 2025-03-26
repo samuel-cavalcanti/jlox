@@ -18,6 +18,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         private enum ClassType {
                 NONE,
                 CLASS,
+                SUBCLASS,
         }
 
         private FunctionType currentFunction = FunctionType.NONE;
@@ -228,8 +229,20 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         public Void visitClassStmt(Stmt.ClassStmt classstmt) {
                 declare(classstmt.name);
                 define(classstmt.name);
+                if (classstmt.superclass != null) {
+                        if (classstmt.superclass.name.lexeme.equals(classstmt.name.lexeme))
+                                Lox.error(classstmt.name, String.format("A class can't inherit from itself: '%s < %s'",
+                                                classstmt.name.lexeme, classstmt.superclass.name.lexeme));
+                        currentClass = ClassType.SUBCLASS;
+                        resolve(classstmt.superclass);
+                }
                 ClassType enclosingClass = currentClass;
                 currentClass = ClassType.CLASS;
+                if (classstmt.superclass != null) {
+                        beginScope();
+                        scopes.peek().put("super", true);
+                }
+
                 beginScope();
                 scopes.peek().put("this", true);
                 for (Stmt.Function method : classstmt.methods) {
@@ -238,6 +251,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
                         resolveFunction(method, t);
                 }
                 endScope();
+                if (classstmt.superclass != null)
+                        endScope();
                 currentClass = enclosingClass;
                 return null;
         }
@@ -261,6 +276,16 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
                 if (currentClass == ClassType.NONE)
                         Lox.error(thisexpr.keyword, "Can't use 'this' outside of a class.");
                 resolveLocal(thisexpr, thisexpr.keyword);
+                return null;
+        }
+
+        @Override
+        public Void visitSuperExpr(Expr.SuperExpr superexpr) {
+                if (currentClass == ClassType.NONE)
+                        Lox.error(superexpr.keyword, "Can't use 'super' outside of a class");
+                if (currentClass != ClassType.SUBCLASS)
+                        Lox.error(superexpr.keyword, "Can't use 'super' with no superclass");
+                resolveLocal(superexpr, superexpr.keyword);
                 return null;
         }
 

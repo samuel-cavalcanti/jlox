@@ -181,3 +181,17 @@ assignment     → ( call "." )? IDENTIFIER "=" assignment
 primary        → NUMBER | STRING | "true" | "false" | "nil" | "this" | IDENTIFIER
                | "(" expression ")" ;
 ```
+
+## Superclasses and Subclasses
+
+
+```
+classDecl      → "class" IDENTIFIER ( "<" IDENTIFIER )?
+                 "{" function* "}" ;
+
+primary        → "true" | "false" | "nil" | "this"
+               | NUMBER | STRING | IDENTIFIER | "(" expression ")"
+               | "super" "." IDENTIFIER ;
+```
+
+
