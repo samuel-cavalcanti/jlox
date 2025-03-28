@@ -409,6 +409,26 @@ public class LoxInterpreterTest {
                                 BostonCream().cook();""",
                                 "Doughnut\nBostonCream\nPipe full of custard and coat with chocolate.\n");
 
+
+
+                testRun("""
+                                class Doughnut {
+                                  cook() {
+                                    var msg = "Fry until golden brown.";
+                                    print msg;
+                                    return msg;
+                                  }
+                                }
+
+                                class BostonCream < Doughnut {
+                                  cook() {
+                                        return super.cook();
+                                  }
+                                }
+
+                                BostonCream().cook();""",
+                                "Doughnut\nBostonCream\nFry until golden brown.\n");
+
         }
 
         void testInterpret(String source, String expected) {

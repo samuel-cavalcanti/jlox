@@ -237,7 +237,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
                         resolve(classstmt.superclass);
                 }
                 ClassType enclosingClass = currentClass;
-                currentClass = ClassType.CLASS;
+                if (classstmt.superclass == null)
+                        currentClass = ClassType.CLASS;
                 if (classstmt.superclass != null) {
                         beginScope();
                         scopes.peek().put("super", true);
