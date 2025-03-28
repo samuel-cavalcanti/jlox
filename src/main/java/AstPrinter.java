@@ -77,4 +77,10 @@ class AstPrinter implements Expr.Visitor<String> {
                 throw new UnsupportedOperationException("Unimplemented method 'visitThisExpr'");
         }
 
+        @Override
+        public String visitSuperExpr(Expr.SuperExpr superexpr) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'visitSuperExpr'");
+        }
+
 }
